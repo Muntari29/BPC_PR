@@ -1,3 +1,4 @@
+import { IsEmail } from 'class-validator';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -12,6 +13,7 @@ export class User {
     nick_name!: string;
 
     @Column()
+    @IsEmail()
     email!: string;
 
     @Column()
@@ -21,5 +23,5 @@ export class User {
     phone_number!: number;
 
     @Column()
-    image: string;
+    image_url: string;
 }
