@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
-import { UserRepository } from './user.repository';
+import { BookRepository } from './book.repository';
 
 @Injectable()
-export class UserService {
+export class BookService {
     constructor(
-        @InjectRepository(UserRepository)
-        private usersRepository: Repository<UserRepository>,
+        @InjectRepository(BookRepository)
+        private usersRepository: Repository<BookRepository>,
         private connection: Connection
     ) {}
 }
