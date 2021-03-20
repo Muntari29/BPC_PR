@@ -20,7 +20,7 @@ export class User {
     password!: string;
 
     @Column()
-    phone_number!: number;
+    phone_number!: string;
 
     @Column()
     image_url: string;
