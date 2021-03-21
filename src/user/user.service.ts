@@ -1,9 +1,11 @@
+import { SignInDto } from './dto/singin-user.dto';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Connection, getManager, Repository } from 'typeorm';
+import { Connection, Repository, SimpleConsoleLogger } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
+import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 @Injectable()
 export class UserService {
@@ -39,13 +41,29 @@ export class UserService {
     }
 
     //findOneUser
-    async findOne(id: number): Promise<any>{
+    async findOne(email: any): Promise<any>{
         console.log('findOne_service_start!')
-        const getUser = await this.usersRepository.findOne(id);
+        const getUser = await this.usersRepository.findOne({where: {email: email.email}});
         console.log(getUser)
         if (!getUser){
             throw new NotFoundException('Not_find_user');
         }
         return getUser;
+    }
+
+    //SignIn
+    async singIn(data: SignInDto): Promise<any>{
+        console.log('singin_sevice_start!')
+        const { email, password } = data;
+        console.log(data);
+        console.log(email);
+        console.log(password);
+        const signInUser = await this.usersRepository.findOne({where: {email:email}});
+        console.log(signInUser);
+        if (!signInUser){
+            throw new NotFoundException('Not_find_email');
+        }
+        
+        return 1;
     }
 }
