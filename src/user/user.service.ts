@@ -1,11 +1,12 @@
 import { SignInDto } from './dto/singin-user.dto';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, HttpException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Connection, Repository, SimpleConsoleLogger } from 'typeorm';
+import { Connection, getRepository, Repository, SimpleConsoleLogger } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
-import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
+import * as argon2 from 'argon2';
+
 
 @Injectable()
 export class UserService {
@@ -39,33 +40,22 @@ export class UserService {
 
         return await this.usersRepository.save([createUser]);
     }
-
-    //findOneUser
-    async findOne(email: any): Promise<any>{
-        console.log('findOne_service_start!')
-        const getUser = await this.usersRepository.findOne({where: {email: email.email}});
-        console.log(getUser)
-        if (!getUser){
-            throw new NotFoundException('Not_find_user');
-        }
-        return getUser;
-    }
-
+    
     //SignIn
     async singIn(data: SignInDto): Promise<any>{
         console.log('singin_sevice_start!')
         const { email, password } = data;
-        console.log(data);
-        console.log(email);
-        console.log(password);
-        const userEmail = await this.usersRepository.findOne({where: {email:email}});
-        const userPass = await this.usersRepository.findOne({where: {password:password}});
-        if (!userEmail){
-            throw new NotFoundException('Not_found_user');
+        try{
+            const getUser = await getRepository('User').createQueryBuilder('user').where({email:email}).getRawOne();
+
+            if (await argon2.verify(getUser.user_password, password)) {
+                return console.log('로그인 오케이');
+            } else {
+                return console.log('로그인 실패');
+            }
+        } catch(error) {
+            //email and password validation
+            throw new BadRequestException('Not_found_user33');
         }
-        if (!userPass){
-            throw new BadRequestException('Not_found_user');
-        }
-        return {statusCode: 200};
     }
 }
