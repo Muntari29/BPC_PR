@@ -58,12 +58,14 @@ export class UserService {
         console.log(data);
         console.log(email);
         console.log(password);
-        const signInUser = await this.usersRepository.findOne({where: {email:email}});
-        console.log(signInUser);
-        if (!signInUser){
-            throw new NotFoundException('Not_find_email');
+        const userEmail = await this.usersRepository.findOne({where: {email:email}});
+        const userPass = await this.usersRepository.findOne({where: {password:password}});
+        if (!userEmail){
+            throw new NotFoundException('Not_found_user');
         }
-        
-        return 1;
+        if (!userPass){
+            throw new BadRequestException('Not_found_user');
+        }
+        return {statusCode: 200};
     }
 }
