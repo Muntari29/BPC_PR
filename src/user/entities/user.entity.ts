@@ -1,5 +1,6 @@
 import { IsEmail } from 'class-validator';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
+import * as argon2 from 'argon2';
 
 @Entity('User')
 export class User {
@@ -24,4 +25,9 @@ export class User {
 
     @Column()
     image_url: string;
+
+    @BeforeInsert()
+    async hashPassword() {
+        this.password = await argon2.hash(this.password, {type: argon2.argon2id, hashLength: 40});
+    }
 }

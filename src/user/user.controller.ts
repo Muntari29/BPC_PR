@@ -20,12 +20,4 @@ export class UserController {
         console.log('controller_start!');
         return this.UserService.singIn(data);
     }
-
-    //findOneUser
-
-    @Get('email')
-    findOne(@Body() email: any){
-        console.log(email)
-        return this.UserService.findOne(email);
-    }
 }
