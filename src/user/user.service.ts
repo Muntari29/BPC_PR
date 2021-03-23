@@ -47,15 +47,29 @@ export class UserService {
         const { email, password } = data;
         try{
             const getUser = await getRepository('User').createQueryBuilder('user').where({email:email}).getRawOne();
-
             if (await argon2.verify(getUser.user_password, password)) {
-                return console.log('로그인 오케이');
+                console.log('signin_ok');
+                return getUser;
             } else {
-                return console.log('로그인 실패');
+                console.log('signin_fail')
+                throw new BadRequestException('Not_found_user');
             }
         } catch(error) {
             //email and password validation
             throw new BadRequestException('Not_found_user33');
         }
+    }
+
+    // token validation test
+    async findUser(id: Number): Promise<any>{
+        console.log('findUser_start');
+        const user = await getRepository("User").createQueryBuilder('user').where({id}).getRawOne();
+        if (!user) {
+            throw new NotFoundException('Not_found_findUser');
+        }
+        return {
+            email: user.user_email,
+            id: user.user_id
+        };
     }
 }

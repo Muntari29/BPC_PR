@@ -1,11 +1,16 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { AuthService } from './auth/auth.service';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { SignInDto } from './dto/singin-user.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-    constructor(readonly UserService: UserService){}
+    constructor(
+        readonly UserService: UserService,
+        readonly AuthService: AuthService
+        ){}
 
     //SignUp
     @Post('signUp')
@@ -16,8 +21,17 @@ export class UserController {
 
     //SignIn
     @Post('signIn')
-    signIn(@Body() data: SignInDto){
+    async signIn(@Body() data: SignInDto){
         console.log('controller_start!');
-        return this.UserService.singIn(data);
+        const result = await this.UserService.singIn(data);
+        return await this.AuthService.login(result);
+    }
+    
+    //findUser
+    @UseGuards(JwtAuthGuard)
+    @Get(':id')
+    async findUser(@Param('id') userId: Number){
+        console.log('111111111');
+        return this.UserService.findUser(userId);
     }
 }
