@@ -1,4 +1,10 @@
-import { PartialType } from "@nestjs/mapped-types";
-import { CreateUserDto } from "./create-user.dto";
+import { IsString } from "class-validator";
 
-export class UpdateMovieDTO extends PartialType(CreateUserDto) {}
+export class UpdateUserDto {
+    // 값이 문자열인지 확인
+    @IsString()
+    readonly nick_name?: string;
+
+    @IsString()
+    readonly password?: string;
+}
