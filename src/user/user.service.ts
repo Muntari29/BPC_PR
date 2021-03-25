@@ -1,11 +1,13 @@
+import { UpdateUserDto } from './dto/update-user.dto';
 import { SignInDto } from './dto/singin-user.dto';
-import { BadRequestException, Injectable, NotFoundException, HttpException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, HttpException, ExceptionFilter, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, getRepository, Repository, SimpleConsoleLogger } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
 import * as argon2 from 'argon2';
+import { JwtService } from '@nestjs/jwt';
 
 
 @Injectable()
@@ -61,15 +63,40 @@ export class UserService {
     }
 
     // token validation test
-    async findUser(id: Number): Promise<any>{
+    async findUser(id: number): Promise<any>{
         console.log('findUser_start');
         const user = await getRepository("User").createQueryBuilder('user').where({id}).getRawOne();
         if (!user) {
             throw new NotFoundException('Not_found_findUser');
         }
         return {
-            email: user.user_email,
-            id: user.user_id
+            id: user.user_id,
+            real_name: user.user_real_name,
+            nick_name: user.user_nick_name,
+            email: user.user_email
         };
+    }
+
+    // Update User Nick_name
+    async upDate(userId: number, upDateData: UpdateUserDto): Promise<any>{
+        console.log('update_start');
+        // userId validation
+        const user = await this.findUser(userId);
+        const nickName = await getRepository("User").createQueryBuilder('user').where({nick_name: upDateData.nick_name}).getRawOne();
+        
+        // nick_name overlap validation
+        if (!nickName){
+            const upDateName = await getRepository("User")
+            .createQueryBuilder('user')
+            .update(User)
+            .set({
+                nick_name: upDateData.nick_name
+            })
+            .where("id = :id", { id:userId})
+            .execute();
+            return `Befor : ${user.nick_name} => After: ${upDateData.nick_name}`;
+        } else {
+            throw new ConflictException('Alerdy_nick_name');
+        }
     }
 }
