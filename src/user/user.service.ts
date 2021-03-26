@@ -19,7 +19,6 @@ export class UserService {
     ) {}
     // SignUp
     async create(data: CreateUserDto): Promise<any>{
-        console.log('post_service_start!')
         const {
             real_name,
             nick_name,
@@ -39,21 +38,19 @@ export class UserService {
         createUser.password = password;
         createUser.phone_number = phone_number;
         createUser.image_url = image_url;
-
-        return await this.usersRepository.save([createUser]);
+        
+        await this.usersRepository.save([createUser]);
+        return `SignUp Success : ${createUser.email}`;
     }
     
     //SignIn
     async singIn(data: SignInDto): Promise<any>{
-        console.log('singin_sevice_start!')
         const { email, password } = data;
         try{
             const getUser = await getRepository('User').createQueryBuilder('user').where({email:email}).getRawOne();
             if (await argon2.verify(getUser.user_password, password)) {
-                console.log('signin_ok');
                 return getUser;
             } else {
-                console.log('signin_fail')
                 throw new BadRequestException('Not_found_user');
             }
         } catch(error) {
@@ -64,7 +61,6 @@ export class UserService {
 
     // token validation test
     async findUser(id: number): Promise<any>{
-        console.log('findUser_start');
         const user = await getRepository("User").createQueryBuilder('user').where({id}).getRawOne();
         if (!user) {
             throw new NotFoundException('Not_found_findUser');
@@ -79,7 +75,6 @@ export class UserService {
 
     // Update User Nick_name
     async upDate(userId: number, upDateData: UpdateUserDto): Promise<any>{
-        console.log('update_start');
         // userId validation
         const user = await this.findUser(userId);
         const nickName = await getRepository("User").createQueryBuilder('user').where({nick_name: upDateData.nick_name}).getRawOne();
@@ -98,5 +93,13 @@ export class UserService {
         } else {
             throw new ConflictException('Alerdy_nick_name');
         }
+    }
+
+    // Delete User
+    async deleteUser(userId: number): Promise<any>{
+        // userId validation
+        const user = await this.findUser(userId);
+        await this.usersRepository.delete(userId);
+        return `Delete User Success : ${userId}`
     }
 }

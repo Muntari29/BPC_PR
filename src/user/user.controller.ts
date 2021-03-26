@@ -1,5 +1,5 @@
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Redirect, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -16,14 +16,14 @@ export class UserController {
     //SignUp
     @Post('signUp')
     create(@Body() data: CreateUserDto){
-        console.log('controller start!');
         return this.UserService.create(data);
     }
 
     //SignIn
+    // response statuscode 201 -> 200, Post method default 201
+    @HttpCode(200)
     @Post('signIn')
     async signIn(@Body() data: SignInDto){
-        console.log('controller_start!');
         const result = await this.UserService.singIn(data);
         return await this.AuthService.login(result);
     }
@@ -32,15 +32,22 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     @Get(':id')
     async findUser(@Param('id') userId: number){
-        console.log('111111111');
         return this.UserService.findUser(userId);
     }
 
     // Update User Nick_name
     @UseGuards(JwtAuthGuard)
+    // redirect example , default statuscode = 302
+    // @Redirect("https://changhoi.github.io", 302)
     @Patch(':id')
     async upDateUser(@Param('id') userId: number, @Body() upDateData: UpdateUserDto){
-        console.log('22222222');
         return await this.UserService.upDate(userId, upDateData);
+    }
+
+    // Delete User
+    @UseGuards(JwtAuthGuard)
+    @Delete(':id')
+    async deleteUser(@Param('id') userId: number){
+        return await this.UserService.deleteUser(userId);
     }
 }
