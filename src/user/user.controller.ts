@@ -1,10 +1,10 @@
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Redirect, UseGuards } from '@nestjs/common';
-import { AuthService } from './auth/auth.service';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Redirect, Request, UseGuards } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { SignInDto } from './dto/singin-user.dto';
 import { UserService } from './user.service';
+import { AuthService } from 'src/auth/auth.service';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -29,10 +29,11 @@ export class UserController {
     }
     
     //findUser
+    // userId = jwt payload
     @UseGuards(JwtAuthGuard)
     @Get(':id')
     async findUser(@Param('id') userId: number){
-        return this.UserService.findUser(userId);
+        return await this.UserService.findUser(userId)
     }
 
     // Update User Nick_name
