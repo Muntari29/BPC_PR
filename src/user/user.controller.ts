@@ -13,8 +13,8 @@ export class UserController {
 
     //SignUp
     @Post('signUp')
-    create(@Body() data: CreateUserDto){
-        return this.UserService.create(data);
+    async create(@Body() data: CreateUserDto){
+        return await this.UserService.create(data);
     }
     
     //findUser
