@@ -1,13 +1,10 @@
 import { UpdateUserDto } from './dto/update-user.dto';
-import { SignInDto } from './dto/singin-user.dto';
-import { BadRequestException, Injectable, NotFoundException, HttpException, ExceptionFilter, ConflictException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Connection, getRepository, Repository, SimpleConsoleLogger } from 'typeorm';
+import { Connection, getRepository, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
-import * as argon2 from 'argon2';
-import { JwtService } from '@nestjs/jwt';
 
 
 @Injectable()
@@ -41,22 +38,6 @@ export class UserService {
         
         await this.usersRepository.save([createUser]);
         return `SignUp Success : ${createUser.email}`;
-    }
-    
-    //SignIn
-    async singIn(data: SignInDto): Promise<any>{
-        const { email, password } = data;
-        try{
-            const getUser = await getRepository('User').createQueryBuilder('user').where({email:email}).getRawOne();
-            if (await argon2.verify(getUser.user_password, password)) {
-                return getUser;
-            } else {
-                throw new BadRequestException('Not_found_user');
-            }
-        } catch(error) {
-            //email and password validation
-            throw new BadRequestException('Not_found_user33');
-        }
     }
 
     // token validation test
