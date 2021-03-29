@@ -1,5 +1,5 @@
 import { UploadBookDto } from './dto/upload-book.dto';
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, Delete } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Like, Repository } from 'typeorm';
 import { BookRepository } from './book.repository';
@@ -56,5 +56,14 @@ export class BookService {
             return 'No matching results were found.';
         }
         return books;
+    }
+
+    // deleteBook
+    async deleteBook(bookId: number): Promise<any>{
+        // bookId validation
+        const book = await this.findBook(bookId);
+        await this.bookRepository.delete(bookId);
+        return `Delete Book Success : ${bookId}`;
+
     }
 }

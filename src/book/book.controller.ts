@@ -1,5 +1,5 @@
 import { UploadBookDto } from './dto/upload-book.dto';
-import { Body, Controller, Get, Param, Post, Query, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { BookService } from './book.service';
 
 @Controller('book')
@@ -26,5 +26,10 @@ export class BookController {
     @Get(':id')
     findBook(@Param('id') bookId: number){
         return this.BookService.findBook(bookId);
+    }
+
+    @Delete(':id')
+    deleteBook(@Param('id') bookId: number){
+        return this.BookService.deleteBook(bookId);
     }
 }
