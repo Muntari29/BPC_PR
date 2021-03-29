@@ -72,5 +72,16 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 Nest is [MIT licensed](LICENSE).
 
+### Stack
+- Typescript
+- MySQL
+- TypeORM
+- NestJS
 
-### 구현 기능
+### Explanation
+- SignUp/ SigNIn (CRUD)
+- argon2 hashingPassword Apply
+- Jwt Authorization(JwtAuthGard)
+- Dto Validation
+- WepPack(Module Bundler)
+- Passport
