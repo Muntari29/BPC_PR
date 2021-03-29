@@ -79,7 +79,7 @@ Nest is [MIT licensed](LICENSE).
 - NestJS
 
 ### Explanation
-- SignUp/ SigNIn (CRUD)
+- SignUp/ SignIn (CRUD)
 - argon2 hashingPassword Apply
 - Jwt Authorization(JwtAuthGard)
 - Dto Validation
