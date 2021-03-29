@@ -1,5 +1,5 @@
 import { UploadBookDto } from './dto/upload-book.dto';
-import { Body, Controller, Post, Request } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Request } from '@nestjs/common';
 import { BookService } from './book.service';
 
 @Controller('book')
@@ -11,5 +11,20 @@ export class BookController {
     @Post('post')
     upLoad(@Body() bookData:UploadBookDto){
         return this.BookService.upLoadBook(bookData);
+    }
+    
+    // No jwt authorization
+    @Get('search')
+    searchBooks(@Query('title') bookTitle: string){
+        return this.BookService.searchBooks(bookTitle);
+    }
+
+    // search를 :id 보다 상위에 위치시켜야함
+    // :id가 상단에 배치 될 경우 search를 id로 받아 들임
+    // 일반적으로 정적 경로를 맨 위에 배치 한 다음 동적 경로(:)를 지정하고 모두 잡은 다음 오류 처리기를 사용하는 것이다.
+    // 이는 express js에서도 동일하게 적용되는 개념이다.
+    @Get(':id')
+    findBook(@Param('id') bookId: number){
+        return this.BookService.findBook(bookId);
     }
 }
