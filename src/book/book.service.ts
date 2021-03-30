@@ -14,16 +14,14 @@ export class BookService {
     ) {}
 
     // upLoadBook
-    async upLoadBook(bookData:UploadBookDto): Promise<any>{
+    async upLoadBook(bookData:UploadBookDto): Promise<string>{
         const {
             title,
             image_url,
             contents,
             datetime
         } = bookData;
-        console.log(title);
         const getBook = await this.bookRepository.findOne({where :{title: title}});
-        console.log(getBook);
         if (getBook){
             throw new BadRequestException('Exists_book');
         }
@@ -38,7 +36,7 @@ export class BookService {
     }
 
     // findbook
-    async findBook(bookId: number): Promise<any>{
+    async findBook(bookId: number): Promise<BookRepository>{
         const book = await this.bookRepository.findOne({where: {id: bookId}});
         if (!book){
             throw new NotFoundException('Not_found_book');
@@ -63,7 +61,7 @@ export class BookService {
     }
 
     // getall use offset, limit
-    async getAll(offset: number, limit: number): Promise<any>{
+    async getAll(offset: number, limit: number): Promise<BookRepository[] | null>{
         if (offset >= limit){
             throw new BadRequestException('check offset&limit');
         }
@@ -79,7 +77,7 @@ export class BookService {
     }
 
     // deleteBook
-    async deleteBook(bookId: number): Promise<any>{
+    async deleteBook(bookId: number): Promise<string>{
         // bookId validation
         const book = await this.findBook(bookId);
         await this.bookRepository.delete(bookId);
