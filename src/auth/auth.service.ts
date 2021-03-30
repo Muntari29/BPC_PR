@@ -12,10 +12,11 @@ export class AuthService {
     private jwtService: JwtService) {}
     
     // Token email check
-    async validateUser(payload): Promise<any> {
+    async validateUser(payload): Promise<Object> {
       console.log('auth_service!!!')
       const account = await this.userService.findUser(payload.sub);
       console.log(account);
+      console.log(typeof(account));
       if (account.email == payload.email) {
         console.log(`validateAccount Success`);
         const {...result} = account;
@@ -24,7 +25,7 @@ export class AuthService {
       return null;
     }
 
-    async singIn(data: SignInDto): Promise<any>{
+    async singIn(data: SignInDto): Promise<Object>{
       console.log('auth_service_signin')
       const { email, password } = data;
       try{

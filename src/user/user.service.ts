@@ -15,7 +15,7 @@ export class UserService {
         private connection: Connection
     ) {}
     // SignUp
-    async create(data: CreateUserDto): Promise<any>{
+    async create(data: CreateUserDto): Promise<string>{
         const {
             real_name,
             nick_name,
@@ -55,7 +55,7 @@ export class UserService {
     }
 
     // Update User Nick_name
-    async upDate(userId: number, upDateData: UpdateUserDto): Promise<any>{
+    async upDate(userId: number, upDateData: UpdateUserDto): Promise<string>{
         // userId validation
         const user = await this.findUser(userId);
         const nickName = await getRepository("User").createQueryBuilder('user').where({nick_name: upDateData.nick_name}).getRawOne();
@@ -77,7 +77,7 @@ export class UserService {
     }
 
     // Delete User
-    async deleteUser(userId: number): Promise<any>{
+    async deleteUser(userId: number): Promise<string>{
         // userId validation
         const user = await this.findUser(userId);
         await this.usersRepository.delete(userId);
