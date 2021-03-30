@@ -47,15 +47,35 @@ export class BookService {
     }
 
     // searchBooks
-    async searchBooks(bookTitle: string): Promise<any>{
+    async searchBooks(bookTitle: string): Promise<BookRepository[] | string>{
         // find, where, like -> 문자열 포함 Search 기능 구현
-        const {...books} = await this.bookRepository.find({where: {title: Like(`%${bookTitle}%`)}});
+        const books = await this.bookRepository.find({
+            skip: 0,
+            take: 5,
+            where: {title: Like(`%${bookTitle}%`)}
+        });
 
         // No matching title
         if (Object.keys(books).length == 0){
             return 'No matching results were found.';
         }
         return books;
+    }
+
+    // getall use offset, limit
+    async getAll(offset: number, limit: number): Promise<any>{
+        if (offset >= limit){
+            throw new BadRequestException('check offset&limit');
+        }
+        const bookData = await this.bookRepository.find({
+            skip: (offset-1) * limit,
+            take: limit
+        })
+        if (!bookData){
+            return null;
+        } else {
+            return bookData;
+        }
     }
 
     // deleteBook
