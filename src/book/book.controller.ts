@@ -19,6 +19,12 @@ export class BookController {
         return this.BookService.searchBooks(bookTitle);
     }
 
+    // getAll books
+    @Get('all')
+    getAll(@Query('offset') offset: number, @Query('limit') limit: number){
+        return this.BookService.getAll(offset, limit);
+    }
+
     // search를 :id 보다 상위에 위치시켜야함
     // :id가 상단에 배치 될 경우 search를 id로 받아 들임
     // 일반적으로 정적 경로를 맨 위에 배치 한 다음 동적 경로(:)를 지정하고 모두 잡은 다음 오류 처리기를 사용하는 것이다.
