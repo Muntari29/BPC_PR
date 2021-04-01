@@ -1,6 +1,7 @@
 import { UploadBookDto } from './dto/upload-book.dto';
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { BookService } from './book.service';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('book')
 export class BookController {
@@ -24,6 +25,13 @@ export class BookController {
     getAll(@Query('offset') offset: number, @Query('limit') limit: number){
         return this.BookService.getAll(offset, limit);
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('bpc')
+    savebpc(@Req() req: any, @Query('title') bookTitle: string){
+        return this.BookService.addBpc(req, bookTitle);
+    }
+
 
     // search를 :id 보다 상위에 위치시켜야함
     // :id가 상단에 배치 될 경우 search를 id로 받아 들임
