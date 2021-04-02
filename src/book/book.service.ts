@@ -1,9 +1,9 @@
+import { Book } from 'src/book/entities/book.entity';
 import { UploadBookDto } from './dto/upload-book.dto';
 import { Injectable, BadRequestException, NotFoundException, Delete, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Like, Repository, getRepository, getConnection, QueryFailedError } from 'typeorm';
 import { BookRepository } from './book.repository';
-import { Book } from './entities/book.entity';
 import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
@@ -78,7 +78,7 @@ export class BookService {
     }
 
     // Add BPC
-    async addBpc(req: any, bookTitle: string): Promise<any>{
+    async addBpc(req: any, bookTitle: string): Promise<string>{
         const userId = req.user.id;
         const bookId = await getRepository('Book')
         .createQueryBuilder('book')
@@ -96,6 +96,14 @@ export class BookService {
         .where({id: userId})
         .getRawOne()
 
+
+        let bookBpc = new Book();
+        bookBpc.id = bookId.book_id;
+        bookBpc.title = bookId.book_title;
+        bookBpc.image_url = bookId.book_image_url;
+        bookBpc.contents = bookId.book_contents;
+        bookBpc.datetime = bookId.book_datetime;
+
         let userdata = new User();
         userdata.id = user.user_id;
         userdata.real_name = user.user_real_name;
@@ -103,28 +111,32 @@ export class BookService {
         userdata.email = user.user_email;
         userdata.password = user.user_password;
         userdata.image_url = user.user_image_url;
-        
-        let bookBpc = new Book();
-        bookBpc.id = bookId.book_id;
-        bookBpc.title = bookId.book_title;
-        bookBpc.image_url = bookId.book_image_url;
-        bookBpc.contents = bookId.book_contents;
-        bookBpc.datetime = bookId.book_datetime;
-        bookBpc.users = [user];
+        userdata.books = [bookBpc];
 
         // QueryFailedError validation (Duplicate PK)
         try{
             await getConnection()
             .createQueryBuilder()
-            .relation(Book, "users")
-            .of(bookBpc)
-            .add(userdata);
+            .relation(User, "books")
+            .of(userdata)
+            .add(bookBpc);
 
             return 'Success_Add_book';
         } catch(e){
             console.log('QueryFaildError');
             throw new BadRequestException('QueryfaildError_Duplicate PK');
         }
+    }
+    // bpc find
+    // user_book MTM table get BPC
+    async findBpc(req: any): Promise<Object>{
+        const userId = req.user.id;
+        const {...data} = await getRepository("User")
+        .createQueryBuilder("user")
+        .leftJoinAndSelect("user.books", "Book")
+        .whereInIds(userId)
+        .getMany()
+        return data;
     }
 
     // deleteBook

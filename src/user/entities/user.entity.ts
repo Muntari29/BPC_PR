@@ -1,5 +1,6 @@
+import { Book } from 'src/book/entities/book.entity';
 import { IsEmail } from 'class-validator';
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, ManyToMany, JoinTable } from 'typeorm';
 import * as argon2 from 'argon2';
 
 @Entity('User')
@@ -30,4 +31,8 @@ export class User {
     async hashPassword() {
         this.password = await argon2.hash(this.password, {type: argon2.argon2id, hashLength: 40});
     }
+
+    @ManyToMany(() => Book)
+    @JoinTable()
+    books: Book[];
 }

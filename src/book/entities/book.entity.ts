@@ -1,4 +1,3 @@
-import { User } from 'src/user/entities/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
 
 @Entity('Book')
@@ -17,8 +16,4 @@ export class Book {
 
     @Column({ type: 'datetime'})
     datetime!: string;
-
-    @ManyToMany(() => User)
-    @JoinTable()
-    users: User[];
 }
