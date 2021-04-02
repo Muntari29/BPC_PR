@@ -26,6 +26,15 @@ export class BookController {
         return this.BookService.getAll(offset, limit);
     }
 
+    // findUser BPC
+    @UseGuards(JwtAuthGuard)
+    @Get('find')
+    findBpc(@Req() req:any){
+        console.log(req);
+        console.log(req.user.id);
+        return this.BookService.findBpc(req);
+    }
+
     @UseGuards(JwtAuthGuard)
     @Post('bpc')
     savebpc(@Req() req: any, @Query('title') bookTitle: string){
